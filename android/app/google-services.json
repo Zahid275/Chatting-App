@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "600134991620",
+    "firebase_url": "https://chat-system-d4a1e-default-rtdb.firebaseio.com",
+    "project_id": "chat-system-d4a1e",
+    "storage_bucket": "chat-system-d4a1e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:600134991620:android:4b112819eea4f2572c9a51",
+        "android_client_info": {
+          "package_name": "com.chitchat.chit_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "600134991620-7uamis2ktcbu6sc741i0fk1g092hbcbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsZdBb7KPwWOg3H17lRSrzFk9CPCEPhzc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "600134991620-7uamis2ktcbu6sc741i0fk1g092hbcbg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
