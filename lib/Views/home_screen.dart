@@ -91,42 +91,51 @@ class HomeScreen extends StatelessWidget {
                     ),
                   );
                 } else {
-                  return Expanded(
-                    child: Obx(() {
-                      return ListView.builder(
-                          itemCount: homeController.filteredFriends!.length,
-                          itemBuilder: (context, index) {
-                            QueryDocumentSnapshot<Map<String, dynamic>>? data =
-                                homeController.filteredFriends![index];
 
-                            String urId = FirebaseAuth.instance.currentUser!.uid;
-                            List chatId = [data["userId"], urId];
-                            chatId.sort();
+                    return Obx(() {
+                      return Expanded(
+                        child: ListView.builder(
+                            itemCount: homeController.filteredFriends.length,
+                            itemBuilder: (context, index) {
+                              QueryDocumentSnapshot<
+                                  Map<String, dynamic>>? data =
+                              homeController.filteredFriends[index];
 
-                            final userInfo = UserModel(
-                                userToken: data["deviceToken"],
-                                profileImage: data["profileImage"],
-                                isOnline: data["isOnline"],
-                                chatId: chatId.join(),
-                                userId: data["userId"],
-                                name: data["name"],
-                                email: data["email"]);
+                              String urId = FirebaseAuth.instance.currentUser!
+                                  .uid;
+                              List chatId = [data["userId"], urId];
+                              chatId.sort();
 
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.01, ),
-                              child: UserTile(
-                                userModel: userInfo,
-                                onTap: () {
-                                  Get.to(ChatScreen(
-                                    userModel: userInfo,
-                                  ));
-                                },
-                              ),
-                            );
-                          });
-                    }),
-                  );
-                }
+                              final userInfo = UserModel(
+                                  userToken: data["deviceToken"],
+                                  profileImage: data["profileImage"],
+                                  isOnline: data["isOnline"],
+                                  chatId: chatId.join(),
+                                  userId: data["userId"],
+                                  name: data["name"],
+                                  email: data["email"]);
+
+                              return Padding(
+                                padding: EdgeInsets.only(bottom: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .height * 0.01,),
+                                child: UserTile(
+                                  userModel: userInfo,
+                                  onTap: () {
+                                    Get.to(ChatScreen(
+                                      userModel: userInfo,
+                                    ));
+                                  },
+                                ),
+                              );
+                            }
+
+                        ),
+                      );
+                      });
+                  }
+
               },
             ),
           ],
