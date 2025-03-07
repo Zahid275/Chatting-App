@@ -195,8 +195,9 @@ class AccountPage extends StatelessWidget {
                                                 .password!
                                                 .trim()
                                           });
-
                                           print("Successfully Updated Profile");
+
+                                          Get.snackbar("", "Successfully updated Credentials",snackPosition: SnackPosition.BOTTOM);
                                         } on FirebaseAuthException catch (e) {
                                           Get.showSnackbar(GetSnackBar(
                                             duration: Duration(seconds: 2),

@@ -10,14 +10,15 @@ class AuthScreen extends StatelessWidget {
   AuthController authController = Get.put(AuthController());
 
   AuthScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          width: MediaQuery.of(context).size.width,
-
-          height: MediaQuery.of(context).size.height,
+          width: size.width,
+          height: size.height,
           decoration: const BoxDecoration(
               image: DecorationImage(
                   image: AssetImage("assets/images/background.png"),
@@ -26,168 +27,124 @@ class AuthScreen extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.395),
+                SizedBox(height: size.height * 0.39),
                 Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: authController.isSignUp.value
-                        ? Text(
-                            "Sign Up",
-                            style: GoogleFonts.poppins(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.blue),
-                          )
-                        : Text(
-                            "Sign In",
-                            style: GoogleFonts.poppins(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.blue),
-                          )),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+                  child: Text(
+                    authController.isSignUp.value ? "Sign Up" : "Sign In",
+                    style: GoogleFonts.poppins(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue),
+                  ),
+                ),
+                SizedBox(height: size.height * 0.015),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.08),
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.08),
                   child: Form(
                     key: authController.formKey,
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          authController.isSignUp.value
-                              ? AuthField(
-                                  onSaved: (value) {
-                                    authController.name = value;
-                                  },
-                                  validator: (value) {
-                                    if (value.toString().isEmpty) {
-                                      return "Please enter full name";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  label: "Full Name")
-                              : const SizedBox(),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (authController.isSignUp.value)
                           AuthField(
-                              onSaved: (value) {
-                                authController.email = value;
-                              },
-                              validator: (value) {
-                                if (value.toString().isEmpty) {
-                                  return "Please Enter Email";
-                                } else if (!(value.toString().contains("@"))) {
-                                  return "Invalid Email";
-                                } else {
-                                  return null;
-                                }
-                              },
-                              label: "Email"),
-                          Column(
-                            children: [
-                              AuthField(
-                                  onSaved: (value) {
-                                    authController.password = value;
-                                  },
-                                  validator: (value) {
-                                    if (value.toString().length < 6) {
-                                      return "Password must be of atleast 6 characters";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  label: "Password"),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextButton(
-                                      onPressed: () {
-                                        authController.toggleSignUp();
-                                      },
-                                      child: authController.isSignUp.value
-                                          ? const Text(
-                                              "Already member! Sign in",
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.blue),
-                                            )
-                                          : const Text("New here? Register",
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.blue))),
-                                  TextButton(
-                                      onPressed: () {},
-                                      child: Text(
-                                        "Forget Password",
-                                        style: GoogleFonts.roboto(
-                                            fontSize: 16,
-                                            color: Colors.blue,
-                                            fontWeight: FontWeight.w500),
-                                      )),
-                                ],
-                              )
-                            ],
+                            onSaved: (value) {
+                              authController.name = value;
+                            },
+                            validator: (value) => value!.isEmpty
+                                ? "Please enter full name"
+                                : null,
+                            label: "Full Name",
                           ),
-                        ]),
-                  ),
-                ),
-
-                Expanded(
-                  child: Container(
-                    padding:  EdgeInsets.only(right: 20),
-                    alignment: Alignment.bottomRight,
-                    height: MediaQuery.of(context).size.height,
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.061,
-                      width: MediaQuery.of(context).size.width*0.3,
-
-                      child: TextButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                side: const BorderSide(
-                                    color: Colors.white70, width: 1.2),
-                                borderRadius: BorderRadius.circular(7)),
-                          ),
-                          onPressed: () {
-                            if (authController.formKey.currentState!.validate()) {
-                              authController.formKey.currentState!.save();
-                  
-                              authController.isSignUp.value
-                                  ? authServices.signUp(
-                                      name: authController.name.toString(),
-                                      email:
-                                          authController.email.toString().trim(),
-                                      password: authController.password
-                                          .toString()
-                                          .trim())
-                                  : authServices.signIn(
-                                      email:
-                                          authController.email.toString().trim(),
-                                      password: authController.password
-                                          .toString()
-                                          .trim());
-                            }
+                        AuthField(
+                          onSaved: (value) {
+                            authController.email = value;
                           },
-                          child: authController.isSignUp.value
-                              ? Text(
-                                  "Sign Up ",
-                                  style: GoogleFonts.poppins(
-                                      color: Colors.white, fontSize: 20),
-                                )
-                              : Text(
-                                  "Sign In",
-                                  style: GoogleFonts.poppins(
-                                      color: Colors.white, fontSize: 20),
-                                )),
+                          validator: (value) {
+                            if (value!.isEmpty) return "Please Enter Email";
+                            if (!value.contains("@")) return "Invalid Email";
+                            return null;
+                          },
+                          label: "Email",
+                        ),
+                        AuthField(
+                          onSaved: (value) {
+                            authController.password = value;
+                          },
+                          validator: (value) => value!.length < 6
+                              ? "Password must be at least 6 characters"
+                              : null,
+                          label: "Password",
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: authController.toggleSignUp,
+                              child: Text(
+                                authController.isSignUp.value
+                                    ? "Already a member? Sign in"
+                                    : "New here? Register",
+                                style: TextStyle(fontSize: 14, color: Colors.blue),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Forget Password",
+                                style: GoogleFonts.roboto(
+                                    fontSize: 16,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-
-             authController.isLoading.value ==true  ? Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.blueAccent,
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(right: size.width * 0.05),
+                    alignment: Alignment.bottomRight,
+                    child: SizedBox(
+                      height: size.height * 0.061,
+                      width: size.width * 0.3,
+                      child: TextButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            side: const BorderSide(color: Colors.white70, width: 1.2),
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (authController.formKey.currentState!.validate()) {
+                            authController.formKey.currentState!.save();
+                            authController.isSignUp.value
+                                ? authServices.signUp(
+                                name: authController.name.toString(),
+                                email: authController.email.toString().trim(),
+                                password: authController.password.toString().trim())
+                                : authServices.signIn(
+                                email: authController.email.toString().trim(),
+                                password: authController.password.toString().trim());
+                          }
+                        },
+                        child: Text(
+                          authController.isSignUp.value ? "Sign Up" : "Sign In",
+                          style: GoogleFonts.poppins(
+                              color: Colors.white, fontSize: 20),
+                        ),
+                      ),
+                    ),
                   ),
-                ):SizedBox(),
-
-                SizedBox(height: MediaQuery.of(context).size.height*0.05,)
+                ),
+                if (authController.isLoading.value)
+                  const Center(
+                    child: CircularProgressIndicator(color: Colors.blueAccent),
+                  ),
+                SizedBox(height: size.height * 0.05),
               ],
             );
           }),

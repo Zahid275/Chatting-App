@@ -13,8 +13,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
-  final HomeController homeController =
-      Get.put(HomeController()); // Retrieve instance
+  final HomeController homeController = Get.put(HomeController());
 
   NotificationServices notificationServices = NotificationServices();
 
@@ -22,22 +21,25 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       drawer: customDrawer(context: context, homeController: homeController),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(right: 20.0, bottom: 20),
+        padding: EdgeInsets.only(right: screenWidth * 0.05, bottom: screenHeight * 0.03),
         child: SizedBox(
-          height: 60,
-          width: 60,
+          height: screenWidth * 0.15,
+          width: screenWidth * 0.15,
           child: FloatingActionButton(
             shape: const CircleBorder(),
             backgroundColor: Colors.blue.shade300,
             onPressed: () {
               Get.to(FilterScreen());
             },
-            child: const Icon(
+            child: Icon(
               Icons.edit,
-              size: 30,
+              size: screenWidth * 0.08,
               color: Colors.white,
             ),
           ),
@@ -49,26 +51,24 @@ class HomeScreen extends StatelessWidget {
         title: Text(
           "Chit Chat",
           style: GoogleFonts.poppins(
-              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.white),
+              fontSize: screenWidth * 0.08, fontWeight: FontWeight.w500, color: Colors.white),
         ),
       ),
       body: Container(
-        padding:EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.02,horizontal: MediaQuery.of(context).size.width * 0.04,),
+        padding: EdgeInsets.symmetric(
+          vertical: screenHeight * 0.02,
+          horizontal: screenWidth * 0.04,
+        ),
         child: Column(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            SizedBox(
-                child: SearchField(
+            SizedBox(height: screenHeight * 0.02),
+            SearchField(
               onChanged: (value) {
                 homeController.searchUsers(value.toString());
               },
               label: "Search friends",
-            )),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
             ),
+            SizedBox(height: screenHeight * 0.02),
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("Users")
@@ -79,63 +79,48 @@ class HomeScreen extends StatelessWidget {
                 homeController.getDocs(snapshot);
 
                 if (snapshot.hasError) {
-                  return const Center(
-                    child: Text("Something Went Wrong"),
-                  );
+                  return const Center(child: Text("Something Went Wrong"));
                 } else if (snapshot.connectionState == ConnectionState.waiting ||
                     !snapshot.hasData ||
                     snapshot.data == null) {
                   return const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.blueAccent,
-                    ),
+                    child: CircularProgressIndicator(color: Colors.blueAccent),
                   );
                 } else {
+                  return Obx((){
+                    return Expanded(
+                      child: ListView.builder(
+                          itemCount: homeController.filteredFriends!.length,
+                          itemBuilder: (context, index) {
+                            QueryDocumentSnapshot<Map<String, dynamic>>? data =
+                            homeController.filteredFriends![index];
 
-                    return Obx(() {
-                      return Expanded(
-                        child: ListView.builder(
-                            itemCount: homeController.filteredFriends.length,
-                            itemBuilder: (context, index) {
-                              QueryDocumentSnapshot<
-                                  Map<String, dynamic>>? data =
-                              homeController.filteredFriends[index];
+                            String urId = FirebaseAuth.instance.currentUser!.uid;
+                            List chatId = [data["userId"], urId];
+                            chatId.sort();
 
-                              String urId = FirebaseAuth.instance.currentUser!
-                                  .uid;
-                              List chatId = [data["userId"], urId];
-                              chatId.sort();
+                            final userInfo = UserModel(
+                                userToken: data["deviceToken"],
+                                profileImage: data["profileImage"],
+                                isOnline: data["isOnline"],
+                                chatId: chatId.join(),
+                                userId: data["userId"],
+                                name: data["name"],
+                                email: data["email"]);
 
-                              final userInfo = UserModel(
-                                  userToken: data["deviceToken"],
-                                  profileImage: data["profileImage"],
-                                  isOnline: data["isOnline"],
-                                  chatId: chatId.join(),
-                                  userId: data["userId"],
-                                  name: data["name"],
-                                  email: data["email"]);
-
-                              return Padding(
-                                padding: EdgeInsets.only(bottom: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .height * 0.01,),
-                                child: UserTile(
-                                  userModel: userInfo,
-                                  onTap: () {
-                                    Get.to(ChatScreen(
-                                      userModel: userInfo,
-                                    ));
-                                  },
-                                ),
-                              );
-                            }
-
-                        ),
-                      );
-                      });
-                  }
-
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: screenHeight * 0.01),
+                              child: UserTile(
+                                userModel: userInfo,
+                                onTap: () {
+                                  Get.to(ChatScreen(userModel: userInfo));
+                                },
+                              ),
+                            );
+                          }),
+    );}
+                  );
+                }
               },
             ),
           ],

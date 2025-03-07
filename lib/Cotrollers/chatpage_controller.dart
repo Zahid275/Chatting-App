@@ -1,4 +1,3 @@
-import 'package:chit_chat/Cotrollers/home_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +9,15 @@ class ChatController extends GetxController {
   bool isCurrentUser = false;
 
   final editKey = GlobalKey<FormState>();
+
+  RxBool  isOnline = false.obs;
+  getOnline({required String userId})async {
+    final docs = await FirebaseFirestore.instance.collection("Users").doc(userId).get();
+
+    isOnline.value =  docs.data()!["isOnline"];
+
+
+  }
 
 
 

@@ -3,14 +3,19 @@ import 'package:chit_chat/Cotrollers/auth_controller.dart';
 import 'package:chit_chat/Services/db_services.dart';
 import 'package:cloudinary/cloudinary.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 
 class CloudServices {
 
   final authController  = Get.put(AuthController);
-  final cloudinary = Cloudinary.signedConfig(
-    apiKey: "151892799529124",
-    apiSecret: "fEhzX4aHYeMIkcbmA9zuMwDd584",
+
+  String? apiKey = dotenv.env["Cloud_API_KEY"];
+  String? secret = dotenv.env["CLOUD_API_SECRET"];
+
+  late final cloudinary = Cloudinary.signedConfig(
+    apiKey: "$apiKey",
+    apiSecret: "$secret",
     cloudName: "dz6supklb",
   );
 

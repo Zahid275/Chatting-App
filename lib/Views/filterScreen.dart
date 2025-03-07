@@ -8,31 +8,37 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class FilterScreen extends StatelessWidget {
   FilterScreen({super.key});
 
-  FilterController filterController = Get.put(FilterController());
+  final FilterController filterController = Get.put(FilterController());
+
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text(
           "Filter Users",
           style: GoogleFonts.poppins(
-              fontSize: 28, fontWeight: FontWeight.w500, color: Colors.white),
+              fontSize: screenWidth * 0.07, // Responsive text
+              fontWeight: FontWeight.w500,
+              color: Colors.white),
         ),
       ),
       backgroundColor: Colors.blue,
       body: Center(
         child: GetBuilder<FilterController>(builder: (controller) {
           return Column(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.04,
+                  vertical: screenHeight * 0.02,
+                ),
                 child: SearchField(
                   onChanged: (value) {
                     filterController.searchUsers(value.toString());
@@ -44,7 +50,6 @@ class FilterScreen extends StatelessWidget {
                 child: ListView.builder(
                     itemCount: filterController.filteredDocs.length,
                     itemBuilder: (context, index) {
-                      print(filterController.filteredDocs.length);
                       final data = filterController.filteredDocs[index];
 
                       String urId = FirebaseAuth.instance.currentUser!.uid;
@@ -61,22 +66,22 @@ class FilterScreen extends StatelessWidget {
                         userId: data["userId"],
                       );
                       return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                          child: UserTile(
-                            userModel: userModel,
-                            onTap: () {
-                              Get.to(ChatScreen(
-                                userModel: userModel,
-                              ));
-                            },
-                          ));
-
-                      // return UserTile(userObject: userObject, onTap: (){})
+                        padding: EdgeInsets.symmetric(
+                          vertical: screenHeight * 0.012,
+                          horizontal: screenWidth * 0.05,
+                        ),
+                        child: UserTile(
+                          userModel: userModel,
+                          onTap: () {
+                            Get.to(ChatScreen(
+                              userModel: userModel,
+                            ));
+                          },
+                        ),
+                      );
                     }),
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: screenHeight * 0.015),
             ],
           );
         }),

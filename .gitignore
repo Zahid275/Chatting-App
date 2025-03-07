@@ -10,6 +10,8 @@
 .svn/
 migrate_working_dir/
 
+
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -41,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+#my ignores
+Service_Credentials.json
+.env
+

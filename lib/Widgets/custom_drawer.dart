@@ -3,20 +3,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Cotrollers/home_controller.dart';
 import '../Views/about_screen.dart';
 import '../Views/account_screen.dart';
 
-Widget customDrawer({required context,required HomeController homeController}){
+Widget customDrawer({required context, required HomeController homeController}) {
+  double screenHeight = MediaQuery.of(context).size.height;
+  double screenWidth = MediaQuery.of(context).size.width;
+
   return Drawer(
     backgroundColor: Colors.blue.shade200,
     child: Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.30,
+          height: screenHeight * 0.366,
           child: DrawerHeader(
+
             decoration: const BoxDecoration(color: Colors.blueAccent),
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
@@ -27,7 +30,7 @@ Widget customDrawer({required context,required HomeController homeController}){
                 if (!snapshot.hasData) {
                   return const Center(
                     child: CircularProgressIndicator(
-                      color: Colors.blueAccent,
+                      color: Colors.white,
                     ),
                   );
                 } else {
@@ -35,38 +38,44 @@ Widget customDrawer({required context,required HomeController homeController}){
                   var data = homeController.myData;
                   return Column(
                     children: [
-                      const SizedBox(height: 10),
+                      SizedBox(height: screenHeight * 0.01),
                       Center(
-                          child: SizedBox(
-                            height: 120,
-                            width: 120,
-                            child: data!["profileImage"]== ""? CircleAvatar(
-                              backgroundColor: Colors.blueGrey,
-                              child: Icon(
-                                FontAwesomeIcons.solidCircleUser,
-                                color: Colors.white70,
-                                size: 120,
-                              ),
-                            ):CircleAvatar(
-                              backgroundImage: Image.network("${data["profileImage"]}").image,
-                            ),
-                          )),
-                      const SizedBox(height: 10),
+                        child: SizedBox(
+                          height: screenWidth * 0.3,
+                          width: screenWidth * 0.3,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.blueGrey,
+                            backgroundImage: data!["profileImage"] != ""
+                                ? NetworkImage("${data["profileImage"]}")
+                                : null,
+                            child: data["profileImage"] == ""
+                                ? Icon(
+                              FontAwesomeIcons.solidCircleUser,
+                              color: Colors.white70,
+                              size: screenWidth * 0.3,
+                            )
+                                : null,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.007),
                       Column(
                         children: [
                           Text(
                             data["name"],
                             style: GoogleFonts.roboto(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white),
+                              fontSize: screenWidth * 0.06,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
                           ),
                           Text(
                             data["email"],
                             style: GoogleFonts.roboto(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white70),
+                              fontSize: screenWidth * 0.04,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white70,
+                            ),
                           ),
                         ],
                       ),
@@ -77,49 +86,50 @@ Widget customDrawer({required context,required HomeController homeController}){
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: screenHeight * 0.03),
         InkWell(
           onTap: () {
             Get.to(AccountPage());
           },
-          child: const ListTile(
-            leading: Icon(FontAwesomeIcons.solidUser, size: 27),
-            title: Text("Account", style: TextStyle(fontSize: 21)),
+          child: ListTile(
+            leading: Icon(FontAwesomeIcons.solidUser, size: screenWidth * 0.07),
+            title: Text("Account", style: TextStyle(fontSize: screenWidth * 0.05)),
           ),
         ),
-        const SizedBox(height: 20),
-        const ListTile(
-          leading: Icon(FontAwesomeIcons.gear, size: 27),
-          title: Text("Settings", style: TextStyle(fontSize: 21)),
+        SizedBox(height: screenHeight * 0.02),
+        ListTile(
+          leading: Icon(FontAwesomeIcons.gear, size: screenWidth * 0.07),
+          title: Text("Settings", style: TextStyle(fontSize: screenWidth * 0.05)),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: screenHeight * 0.02),
         InkWell(
-          onTap: (){
+          onTap: () {
             Get.to(AboutPage());
           },
-          child: const ListTile(
-            leading: Icon(FontAwesomeIcons.circleInfo, size: 27),
-            title: Text("About", style: TextStyle(fontSize: 21)),
+          child: ListTile(
+            leading: Icon(FontAwesomeIcons.circleInfo, size: screenWidth * 0.07),
+            title: Text("About", style: TextStyle(fontSize: screenWidth * 0.05)),
           ),
         ),
         Expanded(child: Container()),
         const Divider(),
         InkWell(
-          onTap: ()async{
+          onTap: () async {
             await homeController.setOffline();
             FirebaseAuth.instance.signOut();
             homeController.friends.clear();
             homeController.filteredFriends.clear();
           },
-          child: const Row(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.logout, size: 28),
-              SizedBox(width: 10),
-              Text("Sign out", style: TextStyle(fontSize: 18)),
+              Icon(Icons.logout, size: screenWidth * 0.07),
+              SizedBox(width: screenWidth * 0.03),
+              Text("Sign out", style: TextStyle(fontSize: screenWidth * 0.045)),
             ],
           ),
         ),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+        SizedBox(height: screenHeight * 0.05),
       ],
     ),
   );

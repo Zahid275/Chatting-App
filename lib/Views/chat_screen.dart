@@ -14,137 +14,132 @@ import '../Cotrollers/home_controller.dart';
 
 class ChatScreen extends StatelessWidget {
   HomeController homeController = Get.find<HomeController>();
-
   final UserModel userModel;
-
-  ChatScreen({super.key, required this.userModel});
-
   final chatController = Get.put(ChatController());
   final DbServices dbServices = DbServices();
 
+  ChatScreen({super.key, required this.userModel});
+
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.blue,
       appBar: AppBar(backgroundColor: Colors.blue),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('Chat Rooms')
-            .doc(userModel.chatId)
-            .collection('Chats')
-            .orderBy("timeStamp")
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(color: Colors.blue));
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          }else {
-            var messages = snapshot.data!.docs;
+      body: Column(
+        children: [
+          topWidget(context: context),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.034,
+                  vertical: screenHeight * 0.055),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade100,
+                borderRadius:
+                    const BorderRadius.only(topLeft: Radius.circular(90)),
+              ),
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('Chat Rooms')
+                    .doc(userModel.chatId)
+                    .collection('Chats')
+                    .orderBy("timeStamp")
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                        child: CircularProgressIndicator(color: Colors.blue));
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  }
 
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                topWidget(context: context),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: MediaQuery
-                        .of(context)
-                        .size
-                        .width * 0.034, vertical: MediaQuery
-                        .of(context)
-                        .size
-                        .height * 0.055),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
-                      borderRadius:
-                      const BorderRadius.only(topLeft: Radius.circular(90)),
-                    ),
-                    child: ListView.builder(
-                      controller: chatController.scrollController.value,
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        var message = messages[index];
-                        chatController.checkCurrentUser(
-                            senderId: message["senderId"],
-                            currentUserId: FirebaseAuth.instance.currentUser!
-                                .uid);
+                  chatController.getOnline(userId: userModel.userId);
+                  var messages = snapshot.data!.docs;
 
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: MediaQuery
-                              .of(context)
-                              .size
-                              .height * 0.01,),
-                          child: MessageTile(
-                            onLongPress: () {
-                              showCustomBottomSheet(
-                                  context: context,
-                                  message: message,
-                                  chatController: chatController,
-                                  dbServices: dbServices);
-                            },
-                            status: message["status"],
-                            isCurrentUser: chatController.isCurrentUser,
-                            message: message["message"],
+                  return ListView.builder(
+                    controller: chatController.scrollController.value,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      var message = messages[index];
+                      chatController.checkCurrentUser(
+                          senderId: message["senderId"],
+                          currentUserId:
+                              FirebaseAuth.instance.currentUser!.uid);
+
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: screenHeight * 0.01,
+                            ),
+                            child: MessageTile(
+                              onLongPress: () {
+                                showCustomBottomSheet(
+                                    context: context,
+                                    message: message,
+                                    chatController: chatController,
+                                    dbServices: dbServices);
+                              },
+                              status: message["status"],
+                              isCurrentUser: chatController.isCurrentUser,
+                              message: message["message"],
+                            ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                Container(
-                  color: Colors.blue.shade100,
-                  padding: EdgeInsets.only(right: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.07, left: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.07, bottom: MediaQuery
-                      .of(context)
-                      .size
-                      .height * 0.05),
-
-                  child: MessageField(
-                    textMessage: chatController.messageController,
-                    onSend: () {
-                      print(homeController.myData);
-                      String currentTime = DateTime.now().toString();
-                      MessageModel msgInfo = MessageModel(
-                        message: chatController.messageController.text.trim(),
-                        chatId: userModel.chatId,
-                        timeStamp: currentTime,
-                        receiverId: userModel.userId,
-                        senderId: FirebaseAuth.instance.currentUser!.uid,
+                        ],
                       );
-
-                      if (chatController.messageController.text
-                          .toString()
-                          .isNotEmpty) {
-                        chatController.messageController.clear();
-                        dbServices.sendMessage(
-                            messageObject: msgInfo, userModel: userModel);
-                      }
                     },
-                  ),
-                )
-              ],
-            );
-          }
-        },
+                  );
+                },
+              ),
+            ),
+          ),
+          Container(
+            color: Colors.blue.shade100,
+            padding: EdgeInsets.only(
+                right: screenWidth * 0.07,
+                left: screenWidth * 0.07,
+                bottom: screenHeight * 0.02),
+            child: MessageField(
+              textMessage: chatController.messageController,
+              onSend: () {
+                String currentTime = DateTime.now().toString();
+                MessageModel msgInfo = MessageModel(
+                  message: chatController.messageController.text.trim(),
+                  chatId: userModel.chatId,
+                  timeStamp: currentTime,
+                  receiverId: userModel.userId,
+                  senderId: FirebaseAuth.instance.currentUser!.uid,
+                );
+
+                if (chatController.messageController.text
+                    .toString()
+                    .isNotEmpty) {
+                  chatController.messageController.clear();
+                  dbServices.sendMessage(
+                      messageObject: msgInfo, userModel: userModel);
+                }
+              },
+            ),
+          )
+        ],
       ),
     );
   }
 
   Widget topWidget({required context}) {
-    return Container(
-      color: Colors.blue.shade100,
-      child: Container(
-        padding:  EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width*0.09,vertical:MediaQuery.of(context).size.height*0.02 ),
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
 
-
+    return Obx(() {
+      return Container(
+        color: Colors.blue.shade100,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.09, vertical: screenHeight * 0.02),
           decoration: const BoxDecoration(
             color: Colors.blue,
             borderRadius: BorderRadius.only(bottomRight: Radius.circular(100)),
@@ -156,25 +151,32 @@ class ChatScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(userModel.name, style: GoogleFonts.bebasNeue(fontSize: 30)),
-                Text( userModel.isOnline? "Online" : "Offline",
-                        style: GoogleFonts.poppins(
-                            fontSize: 18, color: Colors.white),
-                      )
+                  Text(userModel.name,
+                      style: GoogleFonts.bebasNeue(fontSize: 30)),
+                  Text(
+                    chatController.isOnline.value ? "Online" : "Offline",
+                    style:
+                        GoogleFonts.poppins(fontSize: 18, color: Colors.white),
+                  )
                 ],
               ),
-              userModel.profileImage == ""? CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.lightBlue,
-                child: Icon(Icons.person, size: 80, color: Colors.white70),
-              ):CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.blue,
-                backgroundImage: Image.network(userModel.profileImage).image, ),
+              userModel.profileImage == ""
+                  ? CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.lightBlue,
+                      child:
+                          Icon(Icons.person, size: 80, color: Colors.white70),
+                    )
+                  : CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.blue,
+                      backgroundImage:
+                          Image.network(userModel.profileImage).image,
+                    ),
             ],
           ),
-
-      ),
-    );
+        ),
+      );
+    });
   }
 }

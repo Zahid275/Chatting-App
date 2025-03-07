@@ -27,29 +27,29 @@ class UserTile extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(width: 20,),
-              Container(
-                  height: 75,
-                  width: 75,
-
-                  child:userModel.profileImage ==""? CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: const Center(child: Icon(Icons.person,size: 70,color: Colors.white70,)),
-                  ): CircleAvatar(
-                    backgroundColor: Colors.lightBlue.shade200,
-                    backgroundImage: Image.network(userModel.profileImage,fit: BoxFit.fill,).image
-                   )
+              SizedBox(          width: MediaQuery.of(context).size.width*0.029,
               ),
-              const SizedBox(width: 20,),
-              Column(
+              Container(
+                height: MediaQuery.of(context).size.width * 0.18,
+                width: MediaQuery.of(context).size.width * 0.18,
+                child: userModel.profileImage.isEmpty
+                    ? CircleAvatar(
+                  backgroundColor: Colors.blue,
+                  child: Icon(Icons.person,
+                      size: MediaQuery.of(context).size.width * 0.15,
+                      color: Colors.white70),
+                )
+                    : CircleAvatar(
+                  backgroundColor: Colors.lightBlue.shade200,
+                  backgroundImage: NetworkImage(userModel.profileImage),
+                ),
+              ),
+              SizedBox(          width: MediaQuery.of(context).size.width*0.029,
+              ),              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-
-                      child: Text(userModel.name,style: GoogleFonts.poppins(fontSize: 19,fontWeight: FontWeight.w700,color: Colors.white70),),
-                          width:double.infinity,
-                  ),
+                  Text(userModel.name,style: GoogleFonts.poppins(fontSize: 19,fontWeight: FontWeight.w700,color: Colors.white70),),
 
 
                   Text(userModel.email,style: GoogleFonts.poppins(fontSize: 13,color: Colors.black87),),
