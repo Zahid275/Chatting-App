@@ -9,7 +9,7 @@ class AccountField extends StatelessWidget {
    bool? enabled=true;
 
   final void Function(String?)? onSaved;
-   AccountField({ enabled,super.key, required this.text, required this.label,required this.iconData,required this.onSaved,required this.onValidate});
+   AccountField({ this.enabled,super.key, required this.text, required this.label,required this.iconData,required this.onSaved,required this.onValidate});
 
   @override
   Widget build(BuildContext context) {

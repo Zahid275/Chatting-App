@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.chitchat.chit_chat"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

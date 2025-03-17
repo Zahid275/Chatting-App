@@ -42,59 +42,59 @@ class ChatScreen extends StatelessWidget {
                     const BorderRadius.only(topLeft: Radius.circular(90)),
               ),
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('Chat Rooms')
-                    .doc(userModel.chatId)
-                    .collection('Chats')
-                    .orderBy("timeStamp")
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                        child: CircularProgressIndicator(color: Colors.blue));
-                  }
-                  if (snapshot.hasError) {
-                    return Center(child: Text("Error: ${snapshot.error}"));
-                  }
-
-                  chatController.getOnline(userId: userModel.userId);
-                  var messages = snapshot.data!.docs;
-
-                  return ListView.builder(
-                    controller: chatController.scrollController.value,
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      var message = messages[index];
-                      chatController.checkCurrentUser(
-                          senderId: message["senderId"],
-                          currentUserId:
-                              FirebaseAuth.instance.currentUser!.uid);
-
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.01,
-                            ),
-                            child: MessageTile(
-                              onLongPress: () {
-                                showCustomBottomSheet(
-                                    context: context,
-                                    message: message,
-                                    chatController: chatController,
-                                    dbServices: dbServices);
-                              },
-                              status: message["status"],
-                              isCurrentUser: chatController.isCurrentUser,
-                              message: message["message"],
-                            ),
-                          ),
-                        ],
+                  stream: FirebaseFirestore.instance
+                      .collection('Chat Rooms')
+                      .doc(userModel.chatId)
+                      .collection('Chats')
+                      .orderBy("timeStamp")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return const Center(child: Text("Something Went Wrong"));
+                    } else if (!snapshot.hasData || snapshot.data == null) {
+                      return const Center(
+                        child:
+                            CircularProgressIndicator(color: Colors.blueAccent),
                       );
-                    },
-                  );
-                },
-              ),
+                    } else {
+                      chatController.getOnline(userId: userModel.userId);
+                      var messages = snapshot.data!.docs;
+
+                      return ListView.builder(
+                        controller: chatController.scrollController.value,
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          var message = messages[index];
+                          chatController.checkCurrentUser(
+                              senderId: message["senderId"],
+                              currentUserId:
+                                  FirebaseAuth.instance.currentUser!.uid);
+
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.01,
+                                ),
+                                child: MessageTile(
+                                  onLongPress: () {
+                                    showCustomBottomSheet(
+                                        context: context,
+                                        message: message,
+                                        chatController: chatController,
+                                        dbServices: dbServices);
+                                  },
+                                  status: message["status"],
+                                  isCurrentUser: chatController.isCurrentUser,
+                                  message: message["message"],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  }),
             ),
           ),
           Container(

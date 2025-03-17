@@ -17,6 +17,8 @@ class AuthScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
+          padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
+
           width: size.width,
           height: size.height,
           decoration: const BoxDecoration(
@@ -28,85 +30,78 @@ class AuthScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: size.height * 0.39),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-                  child: Text(
-                    authController.isSignUp.value ? "Sign Up" : "Sign In",
-                    style: GoogleFonts.poppins(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue),
-                  ),
+                Text(
+                  authController.isSignUp.value ? "Sign Up" : "Sign In",
+                  style: GoogleFonts.poppins(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blue),
                 ),
                 SizedBox(height: size.height * 0.015),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.08),
-                  child: Form(
-                    key: authController.formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (authController.isSignUp.value)
-                          AuthField(
-                            onSaved: (value) {
-                              authController.name = value;
-                            },
-                            validator: (value) => value!.isEmpty
-                                ? "Please enter full name"
-                                : null,
-                            label: "Full Name",
-                          ),
+                Form(
+                  key: authController.formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (authController.isSignUp.value)
                         AuthField(
                           onSaved: (value) {
-                            authController.email = value;
+                            authController.name = value;
                           },
-                          validator: (value) {
-                            if (value!.isEmpty) return "Please Enter Email";
-                            if (!value.contains("@")) return "Invalid Email";
-                            return null;
-                          },
-                          label: "Email",
-                        ),
-                        AuthField(
-                          onSaved: (value) {
-                            authController.password = value;
-                          },
-                          validator: (value) => value!.length < 6
-                              ? "Password must be at least 6 characters"
+                          validator: (value) => value!.isEmpty
+                              ? "Please enter full name"
                               : null,
-                          label: "Password",
+                          label: "Full Name",
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: authController.toggleSignUp,
-                              child: Text(
-                                authController.isSignUp.value
-                                    ? "Already a member? Sign in"
-                                    : "New here? Register",
-                                style: TextStyle(fontSize: 14, color: Colors.blue),
-                              ),
+                      AuthField(
+                        onSaved: (value) {
+                          authController.email = value;
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) return "Please Enter Email";
+                          if (!value.contains("@")) return "Invalid Email";
+                          return null;
+                        },
+                        label: "Email",
+                      ),
+                      AuthField(
+                        onSaved: (value) {
+                          authController.password = value;
+                        },
+                        validator: (value) => value!.length < 6
+                            ? "Password must be at least 6 characters"
+                            : null,
+                        label: "Password",
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            onPressed: authController.toggleSignUp,
+                            child: Text(
+                              authController.isSignUp.value
+                                  ? "Already a member? Sign in"
+                                  : "New here? Register",
+                              style: TextStyle(fontSize: 14, color: Colors.blue),
                             ),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "Forget Password",
-                                style: GoogleFonts.roboto(
-                                    fontSize: 16,
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.w500),
-                              ),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              "Forget Password",
+                              style: GoogleFonts.roboto(
+                                  fontSize: 16,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w500),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.only(right: size.width * 0.05),
                     alignment: Alignment.bottomRight,
                     child: SizedBox(
                       height: size.height * 0.061,
